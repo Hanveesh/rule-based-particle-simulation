@@ -4,71 +4,101 @@
 
 using namespace sf::Literals;
 
-int main()
-{
+int main(){
+    unsigned int width = 400;
+    unsigned int height = 500;
+    sf::RenderWindow window(sf::VideoMode({width,height}), "MyWindow");
 
-    sf::Window window(sf::VideoMode({400,400}), "First Window",sf::Style::Default,sf::State::Windowed);
-    window.setPosition({0,0});
-    
-    sf::Vector2u size = window.getSize();
+    window.setFramerateLimit(144);
+    float radius = 50.0;
+    sf::CircleShape circle(radius);
+    circle.setOrigin(circle.getGeometricCenter());
+    circle.setPosition({width / 4.0f , height/2.0f});
+    circle.setFillColor(sf::Color::Green);
+    circle.setOutlineThickness(6.5f);
+    circle.setOutlineColor(sf::Color::Red);
 
-    window.setFramerateLimit(60);
 
-    while (window.isOpen())
-    {
-        while(const std::optional<sf::Event> event = window.pollEvent()){
+    sf::RectangleShape rectangle({30.0f,70.0f});
+    rectangle.setOrigin(rectangle.getSize() / 2.0f);
+    rectangle.setPosition({width / 4.0f , height/2.0f});
+    rectangle.setFillColor(sf::Color::Red);
+    rectangle.setOutlineThickness(5.0f);
+    rectangle.setOutlineColor(sf::Color::Green);
+
+
+
+    int r = 0;
+    int s = 2;
+
+    circle.setPointCount(3);
+    while(window.isOpen()){
+
+        while (const std::optional event = window.pollEvent())
+        {
             if(event->is<sf::Event::Closed>()){
                 window.close();
             }
-            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
+            else if(const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
                 if(keyPressed->scancode == sf::Keyboard::Scancode::Escape){
                     window.close();
                 }
             }
-            
-            if(const auto* resized = event->getIf<sf::Event::Resized>()){
-                std::cout<<"x: "<<resized->size.x<<std::endl;
-                std::cout<<"y: "<<resized->size.y<<std::endl;
+
+
+        }
+
+
+
+        std::cout<<r<<std::endl;
+
+        if(r == 0){
+            std::cout<<circle.getPosition().x;
+            if(circle.getPosition().x >= (width - radius)){
+                s+=2;
+                r = 1;
             }
-
-            if(event->is<sf::Event::FocusLost>()){
-                std::cout<<"Went out of window"<<std::endl;
-            }
-
-            if(event->is<sf::Event::FocusGained>()){
-                std::cout<<"Came back into the window"<<std::endl;
-            }
-
-            if(const auto* MouseScrolled = event->getIf<sf::Event::MouseWheelScrolled>()){
-                std::cout<<"Wheel Movement"<<MouseScrolled->delta<<std::endl;
-            }
-
-            if(const auto* MousePressed = event->getIf<sf::Event::MouseButtonPressed>()){
-                if(MousePressed->button == sf::Mouse::Button::Right){
-                    std::cout<<"Pressed right button"<<std::endl;
-                }
-                else if(MousePressed->button == sf::Mouse::Button::Left){
-                    std::cout<<"Pressed left button"<<std::endl;
-                }
-            }
-
-            // if(const auto* mousMoved = event->getIf<sf::Event::MouseMoved>()){
-            //     std::cout<<"Mouse moved to "<< mousMoved->position.x<< " On x";
-            //     std::cout<<" and Mouse moved to "<< mousMoved->position.y<< " On y" <<std::endl;
-            // }
-            // stopped this function because its giving too many outputs to keep track of 
-
-            if(event->is<sf::Event::MouseEntered>()){
-                std::cout<<"Mouse entered the WINDOW!!"<<std::endl;
-            }
-
-            if(event->is<sf::Event::MouseLeft>()){
-                std::cout<<"Mouse LEFT the WINDOW!!!"<<std::endl;
+            else{
+                std::cout<<" moving Right";
+                circle.rotate(sf::degrees(s));
+                circle.move({1,0});
             }
         }
+
+        if (r == 1){
+            if(circle.getPosition().x <= (radius)){
+                s+=2;
+                r = 0;
+            }
+            else{
+                std::cout<<" moving Left";
+                circle.rotate(sf::degrees(-s));
+                circle.move({-1,0});
+            }            
+        }
+
+        circle.setFillColor(sf::Color::Green);
+        rectangle.setFillColor(sf::Color::Red);
+
+        if(circle.getGlobalBounds().findIntersection(rectangle.getGlobalBounds())){
+            std::cout<<"Intersected";
+            circle.setFillColor(sf::Color::White);
+            rectangle.setFillColor(sf::Color::White);
+        }
+
+
+        window.clear();   
+
+        window.draw(circle);window.draw(rectangle);
+        window.display();
+
+
     }
 
 
-    
+
     return 0;
 }
+
+
+
