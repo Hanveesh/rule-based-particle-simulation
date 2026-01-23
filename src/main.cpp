@@ -2,27 +2,39 @@
 #include <optional>
 #include <SFML/Graphics.hpp>
 
-using namespace sf::Literals;
+enum directions {down , right , up, left};
 
 int main(){
-    unsigned int width = 400;
-    unsigned int height = 500;
+    unsigned int width = 800;
+    unsigned int height = 800;
     sf::RenderWindow window(sf::VideoMode({width,height}), "MyWindow");
 
-    sf::ConvexShape convex;
-    convex.setPointCount(6);
-    
-    convex.setPoint(0, {0.f, -50.f});
-    convex.setPoint(1, {40.f, -20.f});
-    convex.setPoint(2, {25.f, 40.f});
-    convex.setPoint(3, {-25.f, 40.f});
-    convex.setPoint(4, {-40.f, -20.f});
-    convex.setPoint(5, {0.f, -50.f});
+    sf::Texture texture;
 
-    convex.setOrigin(convex.getGeometricCenter());
-    convex.setFillColor(sf::Color::Green);
-    convex.setPosition({width/2.0f,height/2.0f});
+    if(!texture.loadFromFile("Sprites/ExampleSprite.png")){
+        std::cerr<<"ERROR : FAILED TO LOAD TEXTURE::Sprites/ExampleSprite.png"<<std::endl;
+        return -1;
+    }
+    
+    sf::Sprite sprite(texture);
+
+    sf::IntRect dir[4];
+    
+    for(int i = 0;i < 4;++i){
+
+        dir[i] =  sf::IntRect({{32*i,0},{32,32}});
+        
+    }
+
+    sprite.setTextureRect(dir[down]);
+    sprite.setOrigin({16,16});
+    sprite.setPosition({width/2.0f,height/2.0f});
+
+    window.setFramerateLimit(60);
+
     while(window.isOpen()){
+
+
 
         while (const std::optional event = window.pollEvent())
         {
@@ -38,17 +50,31 @@ int main(){
 
         }
 
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)){
+            sprite.move({0.0f,1.0f});
+            sprite.setTextureRect(dir[down]);
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)){
+            sprite.move({0.0f,-1.0f});
+            sprite.setTextureRect(dir[up]);
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)){
+            sprite.move({-1.0f,0.0f});
+            sprite.setTextureRect(dir[left]);
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)){
+            sprite.move({1.0f,0.0f});
+            sprite.setTextureRect(dir[right]);
+        }
 
         window.clear();   
 
-        window.draw(convex);
+        window.draw(sprite);
 
         window.display();
 
 
     }
-
-
 
     return 0;
 }
