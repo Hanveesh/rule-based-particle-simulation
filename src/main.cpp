@@ -9,32 +9,19 @@ int main(){
     unsigned int height = 800;
     sf::RenderWindow window(sf::VideoMode({width,height}), "MyWindow");
 
-    sf::Texture texture;
+    sf::VertexArray triag(sf::PrimitiveType::Triangles,3);
 
-    if(!texture.loadFromFile("Sprites/ExampleSprite.png")){
-        std::cerr<<"ERROR : FAILED TO LOAD TEXTURE::Sprites/ExampleSprite.png"<<std::endl;
-        return -1;
-    }
+    triag[0].position = sf::Vector2f({0.0f,height/1.0f});
+    triag[1].position = sf::Vector2f({width/2.0f,height/2.0f});
+    triag[2].position = sf::Vector2f({width/1.0f,height/1.0f});
     
-    sf::Sprite sprite(texture);
-
-    sf::IntRect dir[4];
-    
-    for(int i = 0;i < 4;++i){
-
-        dir[i] =  sf::IntRect({{32*i,0},{32,32}});
-        
-    }
-
-    sprite.setTextureRect(dir[down]);
-    sprite.setOrigin({16,16});
-    sprite.setPosition({width/2.0f,height/2.0f});
+    triag[0].color = sf::Color::Green;
+    triag[1].color = sf::Color::Black;
+    triag[2].color = sf::Color::Blue;
 
     window.setFramerateLimit(60);
 
     while(window.isOpen()){
-
-
 
         while (const std::optional event = window.pollEvent())
         {
@@ -50,26 +37,9 @@ int main(){
 
         }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S)){
-            sprite.move({0.0f,1.0f});
-            sprite.setTextureRect(dir[down]);
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W)){
-            sprite.move({0.0f,-1.0f});
-            sprite.setTextureRect(dir[up]);
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::A)){
-            sprite.move({-1.0f,0.0f});
-            sprite.setTextureRect(dir[left]);
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::D)){
-            sprite.move({1.0f,0.0f});
-            sprite.setTextureRect(dir[right]);
-        }
-
         window.clear();   
 
-        window.draw(sprite);
+        window.draw(triag);
 
         window.display();
 
@@ -78,6 +48,3 @@ int main(){
 
     return 0;
 }
-
-
-
