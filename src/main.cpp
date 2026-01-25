@@ -1,5 +1,6 @@
 #include <iostream>
 #include <optional>
+#include <vector>
 #include <SFML/Graphics.hpp>
 
 enum directions {down , right , up, left};
@@ -9,17 +10,14 @@ int main(){
     unsigned int height = 800;
     sf::RenderWindow window(sf::VideoMode({width,height}), "MyWindow");
 
-    sf::VertexArray triag(sf::PrimitiveType::Triangles,3);
+    window.setFramerateLimit(120);
+    int shapes = 0;
+    std::vector<sf::RectangleShape> arr;
 
-    triag[0].position = sf::Vector2f({0.0f,height/1.0f});
-    triag[1].position = sf::Vector2f({width/2.0f,height/2.0f});
-    triag[2].position = sf::Vector2f({width/1.0f,height/1.0f});
-    
-    triag[0].color = sf::Color::Green;
-    triag[1].color = sf::Color::Black;
-    triag[2].color = sf::Color::Blue;
+    sf::RectangleShape rectanlge({200,100});
+    rectanlge.setOrigin(rectanlge.getGeometricCenter());
+    rectanlge.setPosition({width/2.0f,height/2.0f});
 
-    window.setFramerateLimit(60);
 
     while(window.isOpen()){
 
@@ -34,12 +32,45 @@ int main(){
                 }
             }
 
+            if(auto* Mouse = event->getIf<sf::Event::MouseButtonPressed>()){
+                if(Mouse->button == sf::Mouse::Button::Left){
+
+                    if(shapes < 10){
+                        std::cout<<"Pressed M1"<<std::endl;
+                        
+                        sf::RectangleShape rt;
+
+                        rt.setSize({200,100});
+                        rt.setOrigin(rt.getGeometricCenter());
+                        rt.setPosition(static_cast<sf::Vector2f>(Mouse->position));
+                        rt.setFillColor(sf::Color::White);
+
+                        arr.push_back(rt);
+
+                        shapes++;                        
+                    }
+
+                }
+            }
 
         }
 
         window.clear();   
+        
+        if( rectanlge.getPosition().y != height-50 ){
 
-        window.draw(triag);
+            rectanlge.move({0.0f,1.0f});
+
+        }
+        window.draw(rectanlge);
+
+        for(int i = 0 ; i< shapes;i++){
+            if(arr[i].getPosition().y != height-50){
+            arr[i].move({0.0f,1.0f});
+            }
+
+            window.draw(arr[i]);
+        }
 
         window.display();
 
