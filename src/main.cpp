@@ -3,21 +3,23 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-enum directions {down , right , up, left};
+enum State {Empty = 0 , Filled = 1};
 
 int main(){
-    unsigned int width = 800;
-    unsigned int height = 800;
+    constexpr unsigned int width = 800;
+    constexpr unsigned int height = 800;
+
+    constexpr unsigned int cell_len = 20;
+
+    constexpr unsigned int grid_s = 800/20;
+
+    std::vector<int> grid(grid_s*grid_s);
+    unsigned int shapes = 0;
+
     sf::RenderWindow window(sf::VideoMode({width,height}), "MyWindow");
 
-    window.setFramerateLimit(120);
-    int shapes = 0;
+    window.setFramerateLimit(60);
     std::vector<sf::RectangleShape> arr;
-
-    sf::RectangleShape rectanlge({200,100});
-    rectanlge.setOrigin(rectanlge.getGeometricCenter());
-    rectanlge.setPosition({width/2.0f,height/2.0f});
-
 
     while(window.isOpen()){
 
@@ -35,21 +37,26 @@ int main(){
             if(auto* Mouse = event->getIf<sf::Event::MouseButtonPressed>()){
                 if(Mouse->button == sf::Mouse::Button::Left){
 
-                    if(shapes < 10){
-                        std::cout<<"Pressed M1"<<std::endl;
-                        
-                        sf::RectangleShape rt;
+                    std::cout<<"Pressed M1"<<std::endl;
+                    
+                    sf::RectangleShape rt;
+                    rt.setSize({20,20});
+                    rt.setOrigin(rt.getGeometricCenter());
+                                            
+                    sf::Vector2f MousePos = static_cast<sf::Vector2f>(Mouse->position);
+                    float grid_x = static_cast<float>((static_cast<int>(MousePos.x) / cell_len));
+                    float grid_y = static_cast<float>((static_cast<int>(MousePos.y) / cell_len));
 
-                        rt.setSize({200,100});
-                        rt.setOrigin(rt.getGeometricCenter());
-                        rt.setPosition(static_cast<sf::Vector2f>(Mouse->position));
-                        rt.setFillColor(sf::Color::White);
+                    rt.setPosition({
+                        ((grid_x) * cell_len)  + (cell_len/2),
+                        ((grid_y) * cell_len ) + (cell_len/2)
+                    });
 
-                        arr.push_back(rt);
-
-                        shapes++;                        
-                    }
-
+                    grid[static_cast<int> (grid_y)*grid_s  + static_cast<int> (grid_x)] = Filled;
+                    std::cout<<grid_x<<","<<grid_y<<std::endl;
+                    rt.setFillColor(sf::Color::White);
+                    arr.push_back(rt);
+                    shapes++;
                 }
             }
 
@@ -57,19 +64,26 @@ int main(){
 
         window.clear();   
         
-        if( rectanlge.getPosition().y != height-50 ){
-
-            rectanlge.move({0.0f,1.0f});
-
-        }
-        window.draw(rectanlge);
-
         for(int i = 0 ; i< shapes;i++){
-            if(arr[i].getPosition().y != height-50){
-            arr[i].move({0.0f,1.0f});
+
+            if(arr[i].getPosition().y != height-(cell_len)/2){
+                int grid_x = ((static_cast<int>(arr[i].getPosition().x) / cell_len));
+                int grid_y = ((static_cast<int>(arr[i].getPosition().y) / cell_len));
+                if(grid[((grid_y)*(grid_s) + grid_x) + grid_s] == Empty){
+
+                    grid[(grid_y)*(grid_s) + grid_x] = Empty;
+
+                    arr[i].move({0.0f, static_cast<float>(cell_len)});
+
+                    grid[((grid_y)*(grid_s) + grid_x) + grid_s]  = Filled;
+
+                }
             }
 
+            
+
             window.draw(arr[i]);
+
         }
 
         window.display();
