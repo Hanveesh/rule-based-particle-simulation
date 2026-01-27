@@ -9,9 +9,9 @@ int main(){
     constexpr unsigned int width = 800;
     constexpr unsigned int height = 800;
 
-    constexpr unsigned int cell_len = 20;
+    constexpr unsigned int cell_len = 4;
 
-    constexpr unsigned int grid_s = 800/20;
+    constexpr unsigned int grid_s = 800/cell_len;
 
     std::vector<int> grid(grid_s*grid_s);
     unsigned int shapes = 0;
@@ -40,7 +40,7 @@ int main(){
                     std::cout<<"Pressed M1"<<std::endl;
                     
                     sf::RectangleShape rt;
-                    rt.setSize({20,20});
+                    rt.setSize({cell_len,cell_len});
                     rt.setOrigin(rt.getGeometricCenter());
                                             
                     sf::Vector2f MousePos = static_cast<sf::Vector2f>(Mouse->position);
@@ -69,6 +69,7 @@ int main(){
             if(arr[i].getPosition().y != height-(cell_len)/2){
                 int grid_x = ((static_cast<int>(arr[i].getPosition().x) / cell_len));
                 int grid_y = ((static_cast<int>(arr[i].getPosition().y) / cell_len));
+
                 if(grid[((grid_y)*(grid_s) + grid_x) + grid_s] == Empty){
 
                     grid[(grid_y)*(grid_s) + grid_x] = Empty;
@@ -76,7 +77,17 @@ int main(){
                     arr[i].move({0.0f, static_cast<float>(cell_len)});
 
                     grid[((grid_y)*(grid_s) + grid_x) + grid_s]  = Filled;
-
+                    
+                  }
+                else if( (((grid_y)*(grid_s) + grid_x) + grid_s + 1 >= 0 ) && (grid[((grid_y)*(grid_s) + grid_x) + grid_s + 1] == Empty)){
+                    grid[(grid_y)*(grid_s) + grid_x] = Empty;
+                    arr[i].move({static_cast<float>(cell_len), static_cast<float>(cell_len)});
+                    grid[((grid_y)*(grid_s) + grid_x) + grid_s + 1]  = Filled;
+                }
+                else if( (((grid_y)*(grid_s) + grid_x) + grid_s - 1 >= 0 ) && (grid[((grid_y)*(grid_s) + grid_x) + grid_s - 1] == Empty)){
+                    grid[(grid_y)*(grid_s) + grid_x] = Empty;
+                    arr[i].move({- static_cast<float>(cell_len), static_cast<float>(cell_len)});
+                    grid[((grid_y)*(grid_s) + grid_x) + grid_s - 1]  = Filled;
                 }
             }
 
