@@ -4,3 +4,7 @@ out
 .idea
 .vs
 .vscode
+build/
+_deps/
+CMakeFiles/
+CMakeCache.txt
