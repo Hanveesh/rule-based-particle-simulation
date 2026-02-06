@@ -8,7 +8,7 @@ enum State {Empty = 0 , Filled = 1};
 int main(){
     constexpr unsigned int width = 800;
     constexpr unsigned int height = 800;
-
+    
     constexpr unsigned int cell_len = 4;
 
     constexpr unsigned int grid_s = 800/cell_len;
@@ -61,6 +61,7 @@ int main(){
             }
 
         }
+        
 
         window.clear();   
         
