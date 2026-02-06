@@ -32,7 +32,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Configure
-      run: cmake -B build ${{matrix.platform.flags}} ${{matrix.config.flags}}
+      run: cmake -B build ${{matrix.platform.flags}} ${{matrix.config.flags}} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
     - name: Build
       run: cmake --build build --config Release
